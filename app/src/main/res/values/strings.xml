@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Strings
+
+    @author Vincent Ganneau
+
+    Copyright (C) 2015
+
+-->
+<resources>
+
+    <!-- Application name -->
+    <string name="app_name">Photo Picker</string>
+
+    <!-- Buttons -->
+    <string name="btn_pick_photo">Pick photo</string>
+
+</resources>
