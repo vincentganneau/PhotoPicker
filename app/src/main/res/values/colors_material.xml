@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+    Colors specific to Material themes
+
+    @author Vincent Ganneau
+
+    Copyright (C) 2015
+
+-->
+<resources>
+
+    <!-- Orange -->
+    <color name="material_orange_500">#FF9800</color>
+    <color name="material_orange_700">#F57C00</color>
+
+</resources>

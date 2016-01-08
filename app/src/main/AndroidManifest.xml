@@ -15,6 +15,9 @@
     <!-- Features -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
 
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <!-- Application -->
     <application
         android:allowBackup="true"
