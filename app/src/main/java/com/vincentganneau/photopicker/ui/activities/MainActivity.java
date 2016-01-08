@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -46,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private String mPhotoFilePath;
     private static final String KEY_PHOTO_URI = "com.vincentganneau.photopicker.key.PHOTO_URI";
     private static final String KEY_PHOTO_PATH = "com.vincentganneau.photopicker.key.PHOTO_PATH";
+    private static final String KEY_PHOTO_FILE_PATH = "com.vincentganneau.photopicker.key.PHOTO_FILE_PATH";
 
     // Request code
     private static final int PICK_PHOTO_REQUEST = 1;
@@ -67,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mPhotoUri = savedInstanceState.getParcelable(KEY_PHOTO_URI);
             mPhotoPath = savedInstanceState.getString(KEY_PHOTO_PATH);
+            mPhotoFilePath = savedInstanceState.getString(KEY_PHOTO_FILE_PATH);
             setPhoto();
         }
     }
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelable(KEY_PHOTO_URI, mPhotoUri);
         outState.putString(KEY_PHOTO_PATH, mPhotoPath);
+        outState.putString(KEY_PHOTO_FILE_PATH, mPhotoFilePath);
     }
 
     @Override
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             final Uri uri = data.getData();
             if (uri != null) {
                 mPhotoUri = uri;
-                mPhotoPath = null;
+                mPhotoPath = mPhotoFilePath = null;
             } else {
                 mPhotoUri = null;
                 mPhotoPath = mPhotoFilePath;
@@ -132,8 +137,30 @@ public class MainActivity extends AppCompatActivity {
         if (mPhotoUri != null) {
             mImageView.setImageURI(mPhotoUri);
         } else if (mPhotoPath != null) {
-            final Bitmap bitmap = BitmapFactory.decodeFile(mPhotoPath);
+            Bitmap bitmap = BitmapFactory.decodeFile(mPhotoPath);
+            try {
+                final ExifInterface exifInterface = new ExifInterface(mPhotoPath);
+                final int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+                switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        bitmap = rotatePhoto(bitmap, 90);
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        bitmap = rotatePhoto(bitmap, 180);
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mImageView.setImageBitmap(bitmap);
         }
+    }
+
+    private Bitmap rotatePhoto(Bitmap source, float angle) {
+        final Bitmap bitmap;
+        final Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+        return bitmap;
     }
 }
